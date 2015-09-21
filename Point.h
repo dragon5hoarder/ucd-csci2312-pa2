@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-//namespace Clustering {
+namespace Clustering {
     class Point {
 
     private:
@@ -59,6 +59,6 @@
 
 
     };
-//}
+}
 
 #endif // __point_h

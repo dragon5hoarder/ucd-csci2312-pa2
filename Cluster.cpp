@@ -20,6 +20,6 @@ void Cluster::add(const PointPtr& addedPt){
 
 }
 
-const PointPtr Cluster::&remove(const PointPtr &){
+//const PointPtr Cluster::&remove(const PointPtr &){
 
-}
+//}
