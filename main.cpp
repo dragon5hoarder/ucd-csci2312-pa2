@@ -103,7 +103,11 @@ int main() {
     cout << c4;
 
     cout << "Cluster c1";
+<<<<<<< HEAD
     //c1 += c4; //creates a segmentation fault, dont know what that is
+=======
+    c1 += c4;
+>>>>>>> 8a7c38d0d2fcf3fa884a9c6b80a0445aa444eb0a
     cout << c1;
 
     cout << "c5: ";
