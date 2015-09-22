@@ -189,11 +189,11 @@ namespace Clustering {
     }
 
     std::ostream &operator<<(std::ostream &os, const Point &output) {
-        os << "Coordinates: ";
+        os << "( ";
         for (int i = 0; i < output.dim; i++) {
             os << output.values[i] << ", ";
         }
-        std::cout << std::endl;
+        std::cout << ") " << std::endl;
 
         return os;
     }
