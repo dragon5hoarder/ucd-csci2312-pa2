@@ -145,11 +145,7 @@ namespace Clustering {
         do{
             do {
 
-<<<<<<< HEAD
                 if (testerLhs->point == testerRhs->point) { //TODO segmentation fault
-=======
-                if (testerLhs->point == testerRhs->point) { //segmentation fault
->>>>>>> 8a7c38d0d2fcf3fa884a9c6b80a0445aa444eb0a
                     add(testerRhs->point);
                     testerRhs = testerRhs->next;
                     i++;
@@ -237,11 +233,7 @@ namespace Clustering {
         return os;
     }
 
-<<<<<<< HEAD
     std::istream &operator>>(std::istream &os, const Cluster &input) {
-=======
-    std::istream &operator<<(std::istream &os, const Cluster &input) {
->>>>>>> 8a7c38d0d2fcf3fa884a9c6b80a0445aa444eb0a
         NodePtr tester;
         tester = input.points;
         std::cout << "Input Points: " << std::endl;
