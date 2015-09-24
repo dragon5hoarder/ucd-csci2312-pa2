@@ -63,14 +63,14 @@ int main() {
     c1.add(&p6);
     c1.add(&p5);
 
-    cout << "Cluster c1";
+    cout << "Cluster c1 ";
     cout << c1;
 
-    cout << "Cluster c1";
+    cout << "Cluster c1 ";
     c1.remove(&p6);
     cout << c1;
 
-    cout << "Cluster c2 and c3";
+    cout << "Cluster c2 and c3 ";
     Cluster c2(c1);
     cout << c2;
     Cluster c3;
@@ -93,22 +93,29 @@ int main() {
     c4.add(&p6);
     c4.add(&p7);
 
-    cout << "Cluster c4";
+    cout << "Cluster c4 ";
     cout << c4;
 
     c4 += p1;
+    cout << "added p1 to c4 " << endl;
     cout << c4;
 
     c4 -= p1;
+    cout << "removed p1 from c4 " << endl;
     cout << c4;
 
-    cout << "Cluster c1";
-    //c1 += c4; //creates a segmentation fault, dont know what that is
+    cout << "union of c1 and c4 ";
+    c1 += c4; //creates a segmentation fault, dont know what that is
+    cout << c1;
+
+    cout << "difference of c1 and c4 ";
+    c1 -= c4; //creates a segmentation fault, dont know what that is
     cout << c1;
 
     cout << "c5: ";
     Cluster c5 = c2;
     cin >> c5;
+    cout << c5;
 
 
 

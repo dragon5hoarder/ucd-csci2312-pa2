@@ -44,11 +44,21 @@ namespace Clustering {
     }
 
     Cluster::~Cluster(){
-        delete points;
+        NodePtr tester = points;
+        tester = tester->next;
+        NodePtr deleted = points;
+        while(tester != nullptr){
+            delete deleted;
+            deleted = tester;
+            tester = tester->next;
+        }
+        delete deleted;
+        points = nullptr;
+
     }
 
     // TODO Does not put Points in lexographic order
-    void Cluster::add(const PointPtr &addedPt) {
+    const PointPtr& Cluster::add(const PointPtr &addedPt) {
         NodePtr tester;
         NodePtr placeHolder = new Node;
         placeHolder->point = addedPt;
@@ -58,6 +68,7 @@ namespace Clustering {
             placeHolder->next = points;
             points = placeHolder;
             size++;
+            return addedPt;
         }
 
         else
@@ -71,6 +82,7 @@ namespace Clustering {
             placeHolder->next = tester->next;
             tester->next = placeHolder;
             size++;
+            return addedPt;
         }
 
 
@@ -83,16 +95,15 @@ namespace Clustering {
         bool statement = true;
         //assert (size == 0);
 
-        tester = points;
         if (*(points->point) == *deletedPt) {
-            deleted = tester;
-            points = tester->next;
+            deleted = points;
+            points = points->next;
             delete deleted;
             size--;
             return deletedPt;
         }
 
-        for (int i = 0; i < size; i++) {
+        for (NodePtr tester = points; tester != nullptr; tester = tester->next) {
             if (*(tester->next->point) == *deletedPt) {
                 deleted = tester->next;
                 if (tester->next->next == nullptr) {
@@ -137,12 +148,27 @@ namespace Clustering {
         remove(&rhs);// TODO Will not compile with the const in parameter
     }
 
+    bool Cluster::isPresent(PointPtr& point, NodePtr& head){
+        NodePtr tester = head;
+        while (tester != nullptr){
+            if (tester->point == point)
+                return true;
+            tester = tester->next;
+        }
+        return false;
+    }
+
     Cluster& Cluster::operator+=(const Cluster &rhs){
         NodePtr testerLhs = points;
         NodePtr testerRhs = rhs.points;
-        int i = 0;
-        int j = 0;
-        do{
+
+        while (testerRhs != nullptr) {
+            if (!isPresent(testerRhs->point, testerLhs)) {
+                add(testerRhs->point);
+            }
+            testerRhs = testerRhs->next;
+        }
+        /*do{
             do {
 
                 if (testerLhs->point == testerRhs->point) { //TODO segmentation fault
@@ -156,20 +182,25 @@ namespace Clustering {
                     testerRhs = testerRhs->next;
                     i++;
                 }
-            }while (j < rhs.size);
+            }while (i < rhs.size);
             testerLhs = testerLhs->next;
             testerRhs = rhs.points;
             i = 0;
             j++;
-        }while(i < size);
+        }while(j < size);*/
     }
 
     Cluster& Cluster::operator-=(const Cluster &rhs){
         NodePtr testerLhs = points;
         NodePtr testerRhs = rhs.points;
-        int i = 0;
-        int j = 0;
-        do{
+
+        while (testerLhs != nullptr) {
+            if (!isPresent(testerRhs->point, points)) {
+                remove(testerRhs->point);
+            }
+            testerRhs = testerRhs->next;
+        }
+        /*do{
             do {
 
                 if (testerLhs->point == testerRhs->point) {
@@ -188,7 +219,7 @@ namespace Clustering {
             testerRhs = rhs.points;
             i = 0;
             j++;
-        }while(i < size);
+        }while(i < size);*/
     }
 
     const Cluster operator+(const Cluster &lhs, const PointPtr &rhs){
@@ -220,6 +251,8 @@ namespace Clustering {
 
 
     std::ostream &operator<<(std::ostream &os, const Cluster &output) {
+
+
         NodePtr tester;
         tester = output.points;
         os << "Points: " << std::endl;
@@ -233,6 +266,7 @@ namespace Clustering {
         return os;
     }
 
+
     std::istream &operator>>(std::istream &os, const Cluster &input) {
         NodePtr tester;
         tester = input.points;
@@ -245,7 +279,10 @@ namespace Clustering {
         std::cout << std::endl;
 
         return os;
+
     }
+
+
 
 
 }

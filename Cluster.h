@@ -21,6 +21,7 @@ namespace Clustering {
     private:
         NodePtr points;
         int size;
+        bool isPresent(PointPtr& point, NodePtr& head);
 
     public:
         Cluster();
@@ -29,8 +30,8 @@ namespace Clustering {
         ~Cluster();
 
         // Set functions
-        void add(const PointPtr &addedPt);
-        const PointPtr &remove(const PointPtr &deletedPt);
+        const PointPtr& add(const PointPtr &addedPt);
+        const PointPtr& remove(const PointPtr &deletedPt);
 
         // overloaded operators
         friend bool operator==(const Cluster &lhs, const Cluster &rhs);
