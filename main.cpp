@@ -105,11 +105,11 @@ int main() {
     cout << c4;
 
     cout << "union of c1 and c4 ";
-    c1 += c4; //creates a segmentation fault, dont know what that is
+    c1 += c4;
     cout << c1;
 
     cout << "difference of c1 and c4 ";
-    c1 -= c4; //creates a segmentation fault, dont know what that is
+    c1 -= c4;
     cout << c1;
 
     cout << "c5: ";

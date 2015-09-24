@@ -149,11 +149,11 @@ namespace Clustering {
     }
 
     bool Cluster::isPresent(PointPtr& point, NodePtr& head){
-        NodePtr tester = head;
-        while (tester != nullptr){
-            if (tester->point == point)
+
+        while (head != nullptr){
+            if (head->point == point)
                 return true;
-            tester = tester->next;
+            head = head->next;
         }
         return false;
     }
@@ -168,58 +168,20 @@ namespace Clustering {
             }
             testerRhs = testerRhs->next;
         }
-        /*do{
-            do {
 
-                if (testerLhs->point == testerRhs->point) { //TODO segmentation fault
-                    add(testerRhs->point);
-                    testerRhs = testerRhs->next;
-                    i++;
-                    testerLhs = testerLhs->next;
-                    j++;
-                }
-                else {
-                    testerRhs = testerRhs->next;
-                    i++;
-                }
-            }while (i < rhs.size);
-            testerLhs = testerLhs->next;
-            testerRhs = rhs.points;
-            i = 0;
-            j++;
-        }while(j < size);*/
     }
 
     Cluster& Cluster::operator-=(const Cluster &rhs){
         NodePtr testerLhs = points;
         NodePtr testerRhs = rhs.points;
 
-        while (testerLhs != nullptr) {
-            if (!isPresent(testerRhs->point, points)) {
+        while (testerRhs != nullptr) {
+            if (isPresent(testerRhs->point, testerLhs)) {
                 remove(testerRhs->point);
             }
             testerRhs = testerRhs->next;
         }
-        /*do{
-            do {
 
-                if (testerLhs->point == testerRhs->point) {
-                    remove(testerRhs->point);
-                    testerRhs = testerRhs->next;
-                    i++;
-                    testerLhs = testerLhs->next;
-                    j++;
-                }
-                else {
-                    testerRhs = testerRhs->next;
-                    i++;
-                }
-            }while (j < rhs.size);
-            testerLhs = testerLhs->next;
-            testerRhs = rhs.points;
-            i = 0;
-            j++;
-        }while(i < size);*/
     }
 
     const Cluster operator+(const Cluster &lhs, const PointPtr &rhs){
