@@ -58,16 +58,22 @@ namespace Clustering {
     }
 
     // TODO Does not put Points in lexographic order
+
     void Cluster::add(const PointPtr &addedPt) {
+
         NodePtr tester;
         NodePtr placeHolder = new Node;
         placeHolder->point = addedPt;
         bool statement = true;
+
         if (points == nullptr || *(points->point) >= *addedPt)
+
         {
             placeHolder->next = points;
             points = placeHolder;
             size++;
+
+
 
         }
 
@@ -75,13 +81,17 @@ namespace Clustering {
         {
 
             tester = points;
+
             while (tester->next!= nullptr && *(tester->next->point) < *addedPt)
+
             {
                 tester = tester->next;
             }
             placeHolder->next = tester->next;
             tester->next = placeHolder;
             size++;
+
+
 
         }
 
@@ -95,13 +105,16 @@ namespace Clustering {
         bool statement = true;
         //assert (size == 0);
 
+
         if (points->point == deletedPt) {
+
             deleted = points;
             points = points->next;
             delete deleted;
             size--;
             return deletedPt;
         }
+
         else {
             for (NodePtr tester = points; tester != nullptr; tester = tester->next) {
 
@@ -119,6 +132,7 @@ namespace Clustering {
 
                 }
             }
+
         }
     }
 
@@ -149,22 +163,26 @@ namespace Clustering {
         remove(&rhs);// TODO Will not compile with the const in parameter
     }
 
+
     bool Cluster::isPresent(NodePtr& head, PointPtr& point){
         NodePtr tester = head;
         while (tester != nullptr){
             if (tester->point == point)
                 return true;
             tester = tester->next;
+
         }
         return false;
     }
 
     Cluster& Cluster::operator+=(const Cluster &rhs){
 
+
         NodePtr testerRhs = rhs.points;
 
         while (testerRhs != nullptr) {
             if (!isPresent(points, testerRhs->point)) {
+
                 add(testerRhs->point);
             }
             testerRhs = testerRhs->next;
@@ -174,10 +192,12 @@ namespace Clustering {
 
     Cluster& Cluster::operator-=(const Cluster &rhs){
 
+
         NodePtr testerRhs = rhs.points;
 
         while (testerRhs != nullptr) {
             if (isPresent(points, testerRhs->point)) {
+
                 remove(testerRhs->point);
             }
             testerRhs = testerRhs->next;
