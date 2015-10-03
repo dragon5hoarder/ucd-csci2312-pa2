@@ -34,6 +34,7 @@ namespace Clustering {
         ~Cluster();
 
         // Set functions
+        void clear();
 
         void add(const PointPtr &addedPt);
 
@@ -42,8 +43,8 @@ namespace Clustering {
         // overloaded operators
         friend bool operator==(const Cluster &lhs, const Cluster &rhs);
 
-        Cluster &operator+=(Point &rhs); // add point
-        Cluster &operator-=(Point &rhs); // remove point
+        Cluster &operator+=(const Point &rhs); // add point
+        Cluster &operator-=(const Point &rhs); // remove point
 
         Cluster &operator+=(const Cluster &rhs); // union
         Cluster &operator-=(const Cluster &rhs); // difference

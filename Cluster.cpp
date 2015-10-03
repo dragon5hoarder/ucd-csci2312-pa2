@@ -31,6 +31,7 @@ namespace Clustering {
             return;
         }
         size = copyCluster.size;
+        clear();
         points = new Node;
         NodePtr tester = points;
         NodePtr copyTester = copyCluster.points;
@@ -44,20 +45,27 @@ namespace Clustering {
     }
 
     Cluster::~Cluster(){
-        NodePtr tester = points;
-        tester = tester->next;
-        NodePtr deleted = points;
-        while(tester != nullptr){
-            delete deleted;
-            deleted = tester;
-            tester = tester->next;
-        }
-        delete deleted;
-        points = nullptr;
+        clear();
 
     }
 
-    // TODO Does not put Points in lexographic order
+    void Cluster::clear(){
+        if (points != nullptr) {
+            NodePtr tester = points;
+            tester = tester->next;
+            NodePtr deleted = points;
+            while (tester != nullptr) {
+                delete deleted->point;
+                delete deleted;
+                deleted = tester;
+                tester = tester->next;
+            }
+            delete deleted;
+            points = nullptr;
+        }
+    }
+
+
 
     void Cluster::add(const PointPtr &addedPt) {
 
@@ -72,9 +80,6 @@ namespace Clustering {
             placeHolder->next = points;
             points = placeHolder;
             size++;
-
-
-
         }
 
         else
@@ -90,21 +95,12 @@ namespace Clustering {
             placeHolder->next = tester->next;
             tester->next = placeHolder;
             size++;
-
-
-
         }
-
-
-
     }
 
     const PointPtr& Cluster::remove(const PointPtr &deletedPt) {
         NodePtr tester;
         NodePtr deleted;
-        bool statement = true;
-        //assert (size == 0);
-
 
         if (points->point == deletedPt) {
 
@@ -155,12 +151,42 @@ namespace Clustering {
 
 
 
-    Cluster& Cluster::operator+=(Point &rhs){
-        add(&rhs);// TODO Will not compile with the const in parameter
+    Cluster& Cluster::operator+=(const Point &rhs){
+        PointPtr dynPoint = new Point(rhs);
+        add(dynPoint);
     }
 
-    Cluster& Cluster::operator-=(Point &rhs){
-        remove(&rhs);// TODO Will not compile with the const in parameter
+    Cluster& Cluster::operator-=(const Point &rhs){
+        NodePtr tester;
+        NodePtr deleted;
+        if (*(points->point) == rhs) {
+
+            deleted = points;
+            points = points->next;
+            delete deleted;
+            size--;
+            return *this;
+        }
+
+        else {
+            for (NodePtr tester = points; tester != nullptr; tester = tester->next) {
+
+                if (*(tester->next->point) == rhs) {
+                    deleted = tester->next;
+                    if (tester->next->next == nullptr) {
+                        tester->next = nullptr;
+                    }
+                    else {
+                        tester->next = tester->next->next;
+                    }
+                    delete deleted;
+                    size--;
+                    return *this;
+
+                }
+            }
+
+        }
     }
 
 

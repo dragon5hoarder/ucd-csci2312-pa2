@@ -72,7 +72,7 @@ namespace Clustering {
 
 
 // returns the distance from another specified point
-    double Point::distanceTo(Point &otherPoint) {
+    double Point::distanceTo(const Point &otherPoint) {
         double sum = 0;
         double valueDistance;
         for (int i = 0; i < dim; i++) {
@@ -83,68 +83,68 @@ namespace Clustering {
     }
 
 //Overload operators
-    bool Point::operator==(const Point &rhs) {
+   bool operator==(const Point& lhs, const Point &rhs) {
 
-        for (int i = 0; i < dim; i++) {
-            if (values[i] != rhs.values[i])
+        for (int i = 0; i < lhs.dim; i++) {
+            if (lhs.values[i] != rhs.values[i])
                 return false;
         }
         return true;
     }
 
-    bool Point::operator!=(const Point &rhs) {
-        if (*this == rhs)
+    bool operator!=(const Point& lhs, const Point &rhs) {
+        if (lhs == rhs)
             return false;
         return true;
     }
 
-    bool Point::operator<=(const Point &rhs) {
+    bool operator<=(const Point& lhs, const Point &rhs) {
 
-        for (int i = 0; i < dim; i++) {
-            if (values[i] > rhs.values[i])
+        for (int i = 0; i < lhs.dim; i++) {
+            if (lhs.values[i] > rhs.values[i])
                 return false;
         }
         return true;
     }
 
-    bool Point::operator>=(const Point &rhs) {
+    bool operator>=(const Point& lhs, const Point &rhs) {
 
-        for (int i = 0; i < dim; i++) {
-            if (values[i] < rhs.values[i])
+        for (int i = 0; i < lhs.dim; i++) {
+            if (lhs.values[i] < rhs.values[i])
                 return false;
         }
         return true;
     }
 
-    bool Point::operator<(const Point &rhs) {
-        if (*this >= rhs)
+    bool operator<(const Point& lhs, const Point &rhs) {
+        if (lhs >= rhs)
             return false;
         return true;
     }
 
-    bool Point::operator>(const Point &rhs) {
-        if (*this <= rhs)
+    bool operator>(const Point& lhs, const Point &rhs) {
+        if (lhs <= rhs)
             return false;
         return true;
     }
 
-    const Point Point::operator+(const Point &rhs) {
-        Point temp(dim);
+    const Point operator+(const Point& lhs, const Point &rhs) {
+        Point temp(lhs.dim);
         for (int i = 0; i < rhs.dim; i++) {
-            temp.values[i] = values[i] + rhs.values[i];
+            temp.values[i] = lhs.values[i] + rhs.values[i];
         }
         return temp;
     }
 
-    const Point Point::operator-(const Point &rhs) {
-        Point temp(dim);
+    const Point operator-(const Point& lhs, const Point &rhs) {
+        Point temp(lhs.dim);
         for (int i = 0; i < rhs.dim; i++) {
-            temp.values[i] = this->values[i] - rhs.values[i];
+            temp.values[i] = lhs.values[i] - rhs.values[i];
         }
         return temp;
     }
 
-    const Point Point::operator*(const double rhs) {
+    const Point Point::operator*(double rhs)const {
         Point temp(dim);
         for (int i = 0; i < dim; i++) {
             temp.values[i] = values[i] * rhs;
@@ -152,7 +152,7 @@ namespace Clustering {
         return temp;
     }
 
-    const Point Point::operator/(const double rhs) {
+    const Point Point::operator/(double rhs)const {
         Point temp(dim);
         for (int i = 0; i < dim; i++) {
             temp.values[i] = values[i] / rhs;
@@ -160,28 +160,28 @@ namespace Clustering {
         return temp;
     }
 
-    Point Point::operator+=(const Point &rhs) {
-        for (int i = 0; i < dim; i++) {
-            values[i] += rhs.values[i];
+    Point operator+=(Point& lhs, const Point &rhs) {
+        for (int i = 0; i < lhs.dim; i++) {
+            lhs.values[i] += rhs.values[i];
         }
-        return *this;
+        return lhs;
     }
 
-    Point Point::operator-=(const Point &rhs) {
-        for (int i = 0; i < dim; i++) {
-            values[i] -= rhs.values[i];
+    Point operator-=(Point& lhs, const Point &rhs) {
+        for (int i = 0; i < lhs.dim; i++) {
+            lhs.values[i] -= rhs.values[i];
         }
-        return *this;
+        return lhs;
     }
 
-    Point Point::operator/=(const double rhs) {
+    Point Point::operator/=(double rhs) {
         for (int i = 0; i < dim; i++) {
             values[i] /= rhs;
         }
         return *this;
     }
 
-    Point Point::operator*=(const double rhs) {
+    Point Point::operator*=(double rhs) {
         for (int i = 0; i < dim; i++) {
             values[i] *= rhs;
         }

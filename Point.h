@@ -33,24 +33,24 @@ namespace Clustering {
         int getDim();
 
         // finds the distance from another point
-        double distanceTo(Point &otherPoint);
+        double distanceTo(const Point &otherPoint);
 
         // overloaded operators
-        bool operator==(const Point& rhs);
-        bool operator!=(const Point& rhs);
-        bool operator<=(const Point& rhs);
-        bool operator>=(const Point& rhs);
-        bool operator<(const Point& rhs);
-        bool operator>(const Point& rhs);
-        const Point operator+(const Point& rhs);
-        const Point operator-(const Point& rhs);
-        const Point operator*(const double rhs);
-        const Point operator/(const double rhs);
+        friend bool operator==(const Point& lhs, const Point& rhs);
+        friend bool operator!=(const Point& lhs, const Point& rhs);
+        friend bool operator<=(const Point& lhs, const Point& rhs);
+        friend bool operator>=(const Point& lhs, const Point& rhs);
+        friend bool operator<(const Point& lhs, const Point& rhs);
+        friend bool operator>(const Point& lhs, const Point& rhs);
+        friend const Point operator+(const Point& lhs, const Point& rhs);
+        friend const Point operator-(const Point& lhs, const Point& rhs);
+        const Point operator*(double rhs)const;
+        const Point operator/(double rhs)const;
 
-        Point operator+=(const Point& rhs);
-        Point operator-=(const Point& rhs);
-        Point operator*=(const double rhs);
-        Point operator/=(const double rhs);
+        friend Point operator+=(Point& lhs, const Point& rhs);
+        friend Point operator-=(Point& lhs, const Point& rhs);
+        Point operator*=(double rhs);
+        Point operator/=(double rhs);
 
         double &operator[](int index) { return values[index - 1]; }
 
@@ -59,6 +59,7 @@ namespace Clustering {
 
 
     };
+
 }
 
 #endif // __point_h
