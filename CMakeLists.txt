@@ -4,4 +4,4 @@ project(Int_PA2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES main.cpp Point.cpp Point.h Cluster.cpp Cluster.h)
-add_executable(Int_PA2 ${SOURCE_FILES})
+add_executable(PA3_Int ${SOURCE_FILES})

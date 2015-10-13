@@ -1,5 +1,8 @@
 #include "Point.h"
 #include <cmath>
+#include <string>
+#include <cstdlib>
+
 
 
 namespace Clustering {
@@ -189,20 +192,37 @@ namespace Clustering {
     }
 
     std::ostream &operator<<(std::ostream &os, const Point &output) {
-        os << "( ";
+
         for (int i = 0; i < output.dim; i++) {
-            os << output.values[i] << ", ";
+            os << output.values[i];
+            if(i < output.dim - 1)
+                os << ", ";
         }
-        std::cout << ") " << std::endl;
+        std::cout << ": ";
 
         return os;
     }
 
-    std::istream &operator>>(std::istream &os, const Point &input) {
-        std::cout << "Input coordinates: " << std::endl;
-        for (int i = 0; i < input.dim; i++) {
-            os >> input.values[i];
+    std::istream &operator>>(std::istream &os, Point &input) {
+        std::string value;
+        double d;
+
+        int i = 1;
+        while (getline(os, value, ',')) {
+
+            double resultDouble;//number which will contain the result
+            std::stringstream convert(value); // stringstream used for the conversion initialized with the contents of Text
+
+            if ( !(convert >> resultDouble) )//give the value to Result using the characters in the string
+                resultDouble = 0;//if that fails set Result to 0
+
+            input.setValue(i++, resultDouble);
         }
+
+//        std::cout << "Input coordinates: " << std::endl;
+//        for (int i = 0; i < input.dim; i++) {
+//            os >> input.values[i];
+//        }
 
         return os;
     }

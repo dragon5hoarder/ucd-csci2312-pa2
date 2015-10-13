@@ -5,6 +5,7 @@
 #define __point_h
 
 #include <iostream>
+#include <sstream>
 
 namespace Clustering {
     class Point {
@@ -55,7 +56,7 @@ namespace Clustering {
         double &operator[](int index) { return values[index - 1]; }
 
         friend std::ostream& operator<<(std::ostream& os, const Point& output);
-        friend std::istream& operator>>(std::istream& os, const Point& input);
+        friend std::istream& operator>>(std::istream& os, Point& input);
 
 
     };

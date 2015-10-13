@@ -3,13 +3,19 @@
 //
 
 #include "Cluster.h"
-#include <cassert>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 
 namespace Clustering {
+    int Cluster::clustID = 0;
 
     Cluster::Cluster() {
         size = 0;
         points = nullptr;
+        thisID = clustID++;
     }
 
     Cluster::Cluster(const Cluster &copyCluster) {
@@ -24,6 +30,7 @@ namespace Clustering {
             copyTester = copyTester->next;
         }
         tester->next = nullptr;
+        thisID = clustID++;
     }
 
     void Cluster::operator=(const Cluster &copyCluster){
@@ -264,10 +271,11 @@ namespace Clustering {
 
         NodePtr tester;
         tester = output.points;
-        os << "Points: " << std::endl;
+
         for (int i = 0; i < output.size; i++) {
             os << *(tester->point);
             tester = tester->next;
+            os << output.thisID << std::endl;
 
         }
         std::cout << std::endl;
@@ -276,16 +284,31 @@ namespace Clustering {
     }
 
 
-    std::istream &operator>>(std::istream &os, const Cluster &input) {
-        NodePtr tester;
-        tester = input.points;
-        std::cout << "Input Points: " << std::endl;
-        for (int i = 0; i < input.size; i++) {
-            os >> *(tester->point);
-            tester = tester->next;
+    std::ifstream &operator>>(std::ifstream &os, Cluster &input) {
 
+        std::string line;
+        if (os.is_open()){
+            while(getline(os, line)){
+                std::stringstream lineStream(line);
+                int dimensions = 0;
+                for (int i = 0; i < line.size(); i++) {
+                    if (line[i] == ',') dimensions++;
+                }
+                PointPtr newPoint = new Point(dimensions + 1);
+                lineStream >> *newPoint;
+                input.add(newPoint);
+            }
         }
-        std::cout << std::endl;
+
+//        NodePtr tester;
+//        tester = input.points;
+//        std::cout << "Input Points: " << std::endl;
+//        for (int i = 0; i < input.size; i++) {
+//            os >> *(tester->point);
+//            tester = tester->next;
+//
+//        }
+//        std::cout << std::endl;
 
         return os;
 

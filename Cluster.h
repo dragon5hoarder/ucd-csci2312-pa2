@@ -21,6 +21,8 @@ namespace Clustering {
     private:
         NodePtr points;
         int size;
+        static int clustID;
+        int thisID;
 
         bool isPresent(NodePtr& head, PointPtr& point);
 
@@ -59,7 +61,7 @@ namespace Clustering {
 
 
         friend std::ostream &operator<<(std::ostream &os, const Cluster &output);
-        friend std::istream &operator>>(std::istream &os, const Cluster &input);
+        friend std::ifstream &operator>>(std::ifstream &os, Cluster &input);
     };
 
 }
