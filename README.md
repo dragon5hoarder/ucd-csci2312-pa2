@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Programming Assignment 2
 ####PA2 POINT and CLUSTER CLASS
 
@@ -8,3 +9,8 @@ I also overloaded all of the operators to compare two different points and use s
 Within the new Cluster class I added a function to hold a series of Points.<br>
 These Clusters can add in new points or remove them.<br>
 They can also create unions and differences between different clusters, as well as comparing each point within the cluster.
+=======
+# PA3_Int
+PA3 for Intermediate Programming
+jjj
+>>>>>>> f53f34cd18aff9fccb1b3ebedf1733c5eef509d6
