@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 
 namespace Clustering {
@@ -16,6 +17,9 @@ namespace Clustering {
         size = 0;
         points = nullptr;
         thisID = clustID++;
+        pointDimension = 0;
+        centroid = new Point(pointDimension);
+        validCent = false;
     }
 
     Cluster::Cluster(const Cluster &copyCluster) {
@@ -31,6 +35,9 @@ namespace Clustering {
         }
         tester->next = nullptr;
         thisID = clustID++;
+        pointDimension = copyCluster.pointDimension;
+        centroid = new Point(pointDimension);
+        validCent = copyCluster.validCent;
     }
 
     void Cluster::operator=(const Cluster &copyCluster){
@@ -49,10 +56,15 @@ namespace Clustering {
             copyTester = copyTester->next;
         }
         tester->next = nullptr;
+        pointDimension = copyCluster.pointDimension;
+        centroid = new Point(pointDimension);
+        *centroid = *copyCluster.centroid;
+        validCent = copyCluster.validCent;
     }
 
     Cluster::~Cluster(){
         clear();
+        delete centroid;
 
     }
 
@@ -103,6 +115,7 @@ namespace Clustering {
             tester->next = placeHolder;
             size++;
         }
+        validCent = false;
     }
 
     const PointPtr& Cluster::remove(const PointPtr &deletedPt) {
@@ -137,6 +150,7 @@ namespace Clustering {
             }
 
         }
+        validCent = false;
     }
 
     bool operator==(const Cluster &lhs, const Cluster &rhs){
@@ -172,6 +186,7 @@ namespace Clustering {
             points = points->next;
             delete deleted;
             size--;
+            validCent = false;
             return *this;
         }
 
@@ -188,6 +203,7 @@ namespace Clustering {
                     }
                     delete deleted;
                     size--;
+                    validCent = false;
                     return *this;
 
                 }
@@ -255,11 +271,13 @@ namespace Clustering {
     const Cluster operator+(const Cluster &lhs, const Cluster &rhs){
         Cluster tempCluster = lhs;
         tempCluster += rhs;
+        return tempCluster;
     }
 
     const Cluster operator-(const Cluster &lhs, const Cluster &rhs){
         Cluster tempCluster = lhs;
         tempCluster -= rhs;
+        return tempCluster;
     }
 
 
@@ -290,14 +308,12 @@ namespace Clustering {
         if (os.is_open()){
             while(getline(os, line)){
                 std::stringstream lineStream(line);
-                int dimensions = 0;
-                for (int i = 0; i < line.size(); i++) {
-                    if (line[i] == ',') dimensions++;
-                }
+                int dimensions = (int) std::count(line.begin(), line.end(), ',');
                 PointPtr newPoint = new Point(dimensions + 1);
                 lineStream >> *newPoint;
                 input.add(newPoint);
             }
+            input.pointDimension = input.points->point->getDim();
         }
 
 //        NodePtr tester;
@@ -313,6 +329,44 @@ namespace Clustering {
         return os;
 
     }
+
+    void Cluster::SetCent(const Point &copyPoint){// TODO test
+        *centroid = copyPoint;
+    }
+
+    const Point Cluster::getCent(){// TODO test
+        return *centroid;
+    }
+
+    void Cluster::computeCent() {// TODO test
+        NodePtr tester = points;
+        Point temp(pointDimension);
+        while (tester != nullptr){
+            temp += *tester->point / static_cast<double>(pointDimension);
+            tester = tester->next;
+        }
+        delete centroid;
+        centroid = new Point(temp);
+        validCent = true;
+    }
+
+    bool Cluster::centIsValid(){// TODO test
+        return validCent;
+    }
+
+    void Cluster::pickPoints(int k, PointPtr *pointArray){ //TODO test
+        int step = size / k;
+        NodePtr tester = points;
+        int j = 0;
+        while (tester != nullptr) {
+            for (int i = 0; i < step; i++) {
+                tester = tester->next;
+            }
+            pointArray[j] = tester->point;
+            j++;
+        }
+    }
+
 
 
 

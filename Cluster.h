@@ -23,6 +23,9 @@ namespace Clustering {
         int size;
         static int clustID;
         int thisID;
+        int pointDimension;
+        PointPtr centroid;
+        bool validCent;
 
         bool isPresent(NodePtr& head, PointPtr& point);
 
@@ -42,6 +45,15 @@ namespace Clustering {
 
         const PointPtr& remove(const PointPtr &deletedPt);
 
+        // Centroid Operators
+        void SetCent(const Point &copyPoint);
+        const Point getCent();
+        void computeCent();
+        bool centIsValid();
+
+        void pickPoints(int k, PointPtr *pointArray);
+
+
         // overloaded operators
         friend bool operator==(const Cluster &lhs, const Cluster &rhs);
 
@@ -56,6 +68,15 @@ namespace Clustering {
 
         friend const Cluster operator+(const Cluster &lhs, const Cluster &rhs);
         friend const Cluster operator-(const Cluster &lhs, const Cluster &rhs);
+
+        class Move {
+        private:
+            PointPtr ptr;
+            Cluster *from, *to;
+        public:
+            Move(const PointPtr ptr, Cluster *from, Cluster *to) : ptr(ptr), from(from), to(to) {}
+            void perform() {to->add(from->remove(ptr));}
+        };
 
 
 

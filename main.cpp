@@ -18,6 +18,8 @@ int main() {
 
     cout << c1;
 
+
+
     std::ifstream file2("points.txt");
     Cluster c2;
 
