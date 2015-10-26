@@ -72,11 +72,13 @@ namespace Clustering {
 
         Point &operator[](int index) const;
 
+        //calcutaes the distances between points to calculate the Beta-CV equation
         double intraClusterDistance() const;
         friend double interClusterDistance(const Cluster &c1, const Cluster &c2);
         int getClusterEdges();
         friend double interClusterEdges(const Cluster &c1, const Cluster &c2);
 
+        // class wich moves a point to anther cluster and removes it from original
         class Move {
         private:
             PointPtr ptr;
@@ -88,7 +90,7 @@ namespace Clustering {
 
 
 
-
+        // IO
         friend std::ostream &operator<<(std::ostream &os, const Cluster &output);
         friend std::ifstream &operator>>(std::ifstream &os, Cluster &input);
     };

@@ -55,6 +55,7 @@ namespace Clustering {
 
         double &operator[](int index) { return values[index - 1]; }
 
+        //IO
         friend std::ostream& operator<<(std::ostream& os, const Point& output);
         friend std::istream& operator>>(std::istream& os, Point& input);
 

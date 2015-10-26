@@ -4,7 +4,7 @@
 
 #include "KMeans.h"
 #include <cmath>
-#include <gmpxx.h>
+#include <limits>
 
 namespace Clustering{
     const double KMeans::SCORE_DIFF_THRESHOLD = 1;
@@ -16,6 +16,7 @@ namespace Clustering{
         clusterArray = new Cluster[k];
         os >> clusterArray[0];
         PointPtr initCentroids[k];
+        // sets the centroids for k clusters
         clusterArray[0].pickPoints(k, initCentroids);
         for (int i = 0; i < k; i++){
             clusterArray[i].setCent(*initCentroids[i]);
@@ -23,17 +24,22 @@ namespace Clustering{
         double score, scoreDiff;
         scoreDiff = SCORE_DIFF_THRESHOLD + 1;
         while (scoreDiff > SCORE_DIFF_THRESHOLD){
-            for(int i = 0; i < k; i++){// loop through clusters
-                for(int j = 0; j < clusterArray[i].getSize(); j++){// loop through points
+            // loop through clusters
+            for(int i = 0; i < k; i++){
+                // loop through points
+                for(int j = 0; j < clusterArray[i].getSize(); j++){
                     Cluster* minDistClust = &clusterArray[0];
                     double distance = std::numeric_limits<double>::max();
-                    for(int w = 0; w < k; w++){// loop through centroids
+                    // loop through centroids
+                    for(int w = 0; w < k; w++){
+                        //checks to see which centroid is the closest
                         if (clusterArray[i][j].distanceTo(clusterArray[w].getCent()) < distance){
                             minDistClust = &clusterArray[w];
                             distance = clusterArray[i][j].distanceTo(clusterArray[w].getCent());
                         }
 
                     }
+                    //moves point to cluster with closest centroid
                     if (!(*minDistClust == clusterArray[i])){
                         Cluster::Move move(&clusterArray[i][j], &clusterArray[i], minDistClust);
                         move.perform();
@@ -41,11 +47,13 @@ namespace Clustering{
                     }
                 }
             }
+            // recalculates each centroid
             for(int i = 0; i < k; i++){
                 if (!clusterArray[i].centIsValid()){
                     clusterArray[i].computeCent();
                 }
             }
+            // uses Beta-CV equation to determine if the points need to be recalculated
             scoreDiff = fabs(score - computeClusteringScore());
         }
         for (int i = 0; i < k; i++){
@@ -54,18 +62,11 @@ namespace Clustering{
         std::cout << "printed!" << std::endl;
     }
 
-    KMeans::KMeans(const KMeans &copyKMeans){
-        std::cout << "Unable to copy for now" << std::endl;
-    }
-
-    void KMeans::operator=(const KMeans &copyKMeans){
-        std::cout << "Unable to copy for now" << std::endl;
-    }
-
     KMeans::~KMeans(){
         delete [] clusterArray;
     }
 
+    // calculates Beta-CV equation
     double KMeans::computeClusteringScore(){
         double result, Din = 0, Dout = 0, Pin = 0, Pout = 0;
         for(int i = 0; i < k; i++){

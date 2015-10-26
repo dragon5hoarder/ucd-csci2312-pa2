@@ -297,7 +297,7 @@ namespace Clustering {
             os << output.thisID << std::endl;
 
         }
-        std::cout << std::endl;
+        os <<  *output.centroid << " centroid" << std::endl;
 
         return os;
     }
@@ -374,7 +374,7 @@ namespace Clustering {
 
     Point &Cluster::operator[](int index) const{ // TODO test
         NodePtr tester = points;
-        Point temp(1);
+        Point temp(pointDimension);
         int i = 0;
         while (tester != nullptr){
             if (i == index) {

@@ -10,9 +10,9 @@ using namespace Clustering;
 int main() {
     cout << "Hello, World!" << endl;
 //Testing
-    std::ifstream file("points.txt");
+   ifstream file("points.txt");
 
-    KMeans test(2, file, 5);
+    KMeans test(3, file, 5);
     file.close();
 
 
