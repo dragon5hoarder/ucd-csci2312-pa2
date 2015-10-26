@@ -19,7 +19,9 @@ namespace Clustering {
         Cluster *clusterArray;
     public:
         // Constructors
-        KMeans(int initK, std::ifstream &os, int Dim); //only constructor needed, runs the entire program
+        // only constructor needed, runs the entire program
+        // user dictates what the input file is
+        KMeans(int initK, std::ifstream &os, int Dim);
         //TODO exception- no copy or assignment op
         ~KMeans();
 
