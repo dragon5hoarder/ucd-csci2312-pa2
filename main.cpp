@@ -2,6 +2,7 @@
 #include <fstream>
 #include "Point.h"
 #include "Cluster.h"
+#include "KMeans.h"
 
 using namespace std;
 using namespace Clustering;
@@ -10,24 +11,32 @@ int main() {
     cout << "Hello, World!" << endl;
 //Testing
     std::ifstream file("points.txt");
-    Cluster c1;
 
-    cout << "c1: " << endl;
-    file >> c1;
+    KMeans test(2, file, 5);
     file.close();
 
-    cout << c1;
 
-
-
-    std::ifstream file2("points.txt");
-    Cluster c2;
-
-    cout << "c2: " << endl;
-    file2 >> c2;
-    file2.close();
-
-    cout << c2;
+//    Cluster c1;
+//
+//    cout << "c1: " << endl;
+//    file >> c1;
+//    file.close();
+//
+//    cout << c1;
+//    c1.computeCent();
+//    cout << c1.getCent() << endl;
+//    cout << c1.intraClusterDistance() << endl;
+//
+//
+//
+//    std::ifstream file2("points.txt");
+//    Cluster c2;
+//
+//    cout << "c2: " << endl;
+//    file2 >> c2;
+//    file2.close();
+//
+//    cout << c2;
 
 
 

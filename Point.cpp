@@ -198,7 +198,7 @@ namespace Clustering {
             if(i < output.dim - 1)
                 os << ", ";
         }
-        std::cout << ": ";
+        os << ": ";
 
         return os;
     }

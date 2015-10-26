@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <cstdlib>
 
 
 namespace Clustering {
@@ -330,7 +331,7 @@ namespace Clustering {
 
     }
 
-    void Cluster::SetCent(const Point &copyPoint){// TODO test
+    void Cluster::setCent(const Point &copyPoint){// TODO test
         *centroid = copyPoint;
     }
 
@@ -339,14 +340,15 @@ namespace Clustering {
     }
 
     void Cluster::computeCent() {// TODO test
+        pointDimension = points->point->getDim();
         NodePtr tester = points;
-        Point temp(pointDimension);
+        PointPtr temp = new Point(pointDimension);
         while (tester != nullptr){
-            temp += *tester->point / static_cast<double>(pointDimension);
+            *temp += *tester->point / static_cast<double>(size);
             tester = tester->next;
         }
         delete centroid;
-        centroid = new Point(temp);
+        centroid = temp;
         validCent = true;
     }
 
@@ -357,14 +359,66 @@ namespace Clustering {
     void Cluster::pickPoints(int k, PointPtr *pointArray){ //TODO test
         int step = size / k;
         NodePtr tester = points;
-        int j = 0;
-        while (tester != nullptr) {
-            for (int i = 0; i < step; i++) {
+        pointArray[0] = points->point;
+
+         for (int i = 1; i < k; i++){
+             int j = 0;
+             while (tester != nullptr && j < step){
+                tester = tester->next;
+                j++;
+            }
+            pointArray[i] = tester->point;
+
+        }
+    }
+
+    Point &Cluster::operator[](int index) const{ // TODO test
+        NodePtr tester = points;
+        Point temp(1);
+        int i = 0;
+        while (tester != nullptr){
+            if (i == index) {
+                return *tester->point;
+            }
+            else{
+                i ++;
                 tester = tester->next;
             }
-            pointArray[j] = tester->point;
-            j++;
         }
+        return temp;
+    }
+
+    double Cluster::intraClusterDistance() const{ // TODO test
+        NodePtr testerI = points;
+        NodePtr testerJ = points;
+        double sum = 0;
+        for (int i = 0; i < size; i++){
+            for (int j = 0; j < size; j++){
+                sum += testerJ->point->distanceTo(*testerI->point);
+                testerJ = testerJ->next;
+            }
+            testerJ = points;
+            testerI = testerI->next;
+        }
+        return sum / 2;
+    }
+
+    double interClusterDistance(const Cluster &c1, const Cluster &c2){ // TODO test
+        double sum = 0;
+        for (int i = 0; i < c1.size; i++){
+            for (int j = 0; j < c2.size; j++){
+                sum += c1[j].distanceTo(c2[i]);
+            }
+        }
+        return sum;
+    }
+
+    int Cluster::getClusterEdges(){ // TODO test
+        return size * (size - 1) / 2;
+    }
+
+    double interClusterEdges(const Cluster &c1, const Cluster &c2){
+        return c1.size * c2.size;
     }
 
 

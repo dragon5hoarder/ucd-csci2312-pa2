@@ -46,12 +46,13 @@ namespace Clustering {
         const PointPtr& remove(const PointPtr &deletedPt);
 
         // Centroid Operators
-        void SetCent(const Point &copyPoint);
+        void setCent(const Point &copyPoint);
         const Point getCent();
         void computeCent();
         bool centIsValid();
 
         void pickPoints(int k, PointPtr *pointArray);
+        int getSize() { return size; }
 
 
         // overloaded operators
@@ -68,6 +69,13 @@ namespace Clustering {
 
         friend const Cluster operator+(const Cluster &lhs, const Cluster &rhs);
         friend const Cluster operator-(const Cluster &lhs, const Cluster &rhs);
+
+        Point &operator[](int index) const;
+
+        double intraClusterDistance() const;
+        friend double interClusterDistance(const Cluster &c1, const Cluster &c2);
+        int getClusterEdges();
+        friend double interClusterEdges(const Cluster &c1, const Cluster &c2);
 
         class Move {
         private:
