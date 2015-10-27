@@ -13,3 +13,5 @@ Each cluster holds a uniqe point, grouped based on their distance to each other.
 KMeans then creates a text file called output, which displays each point and which cluster they belong to.<br>
 I also allowed to print out the centroid of the cluster, for testing purposes.<br><br>
 
+####Compiler
+I have used the gcc compiler within clion and cygwin.<br>
