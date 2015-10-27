@@ -1,18 +1,15 @@
-<<<<<<< HEAD
+
 # PA3_Int
 PA3
-=======
 
-# Programming Assignment 2
-####PA2 POINT and CLUSTER CLASS
 
-This program has updated the Point class and added another class called Cluster.<br>
-In the Point class I added a function to give it a limitless amount of dimensions.<br>
-I also overloaded all of the operators to compare two different points and use simple arithmetic on each Point.<br>
+# Programming Assignment 3
+####PA3 Implementation of KMeans
 
-Within the new Cluster class I added a function to hold a series of Points.<br>
-These Clusters can add in new points or remove them.<br>
-They can also create unions and differences between different clusters, as well as comparing each point within the cluster.
-
->>>>>>> e216d8c957023efb9ab77c58151c1c7a75e5bb5c
+This program has updated the Cluster class and added another class called KMeans.<br>
+KMeans takes in a user specified int k, a file filled with points( each dimension seperated by a ','), and a specified dimension.<br>
+KMeans then takes all the points and stores them into k clusters.<br>
+Each cluster holds a uniqe point, grouped based on their distance to each other.<br>
+KMeans then creates a text file called output, which displays each point and which cluster they belong to.<br>
+I also allowed to print out the centroid of the cluster, for testing purposes.<br><br>
 
