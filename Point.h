@@ -6,61 +6,117 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <cstdlib>
+
+#include "Exceptions.h"
 
 namespace Clustering {
+    template<typename T, int dim>
     class Point {
 
     private:
-        int dim;
-        double *values;
+
+        static unsigned int pointID;
+        unsigned int thisID;
+        std::vector<T> values;
 
     public:
         // Constructors
-        Point(int dimension);
-        Point(int dimension, double *coordinates);
+        Point();
+
+        Point(T *coordinates);
 
         //copy constructor and assignment operator
-        Point(const Point& copyPt);
-        void operator=(const Point& copyPt);
+        Point(const Point &copyPt);
+
+        void operator=(const Point &copyPt);
 
         // Destructor
         ~Point();
 
         // Mutator method
-        void setValue(int dimension, double newValue);
+        void setValue(int dimension, T newValue);
 
         // Accessor method
-        double getValue(int dimension);
-        int getDim();
+        T getValue(int dimension);
+
+        // int getDim();
+        unsigned int getId() const { return thisID; }
 
         // finds the distance from another point
-        double distanceTo(const Point &otherPoint);
+        T distanceTo(const Point &otherPoint);
 
         // overloaded operators
-        friend bool operator==(const Point& lhs, const Point& rhs);
-        friend bool operator!=(const Point& lhs, const Point& rhs);
-        friend bool operator<=(const Point& lhs, const Point& rhs);
-        friend bool operator>=(const Point& lhs, const Point& rhs);
-        friend bool operator<(const Point& lhs, const Point& rhs);
-        friend bool operator>(const Point& lhs, const Point& rhs);
-        friend const Point operator+(const Point& lhs, const Point& rhs);
-        friend const Point operator-(const Point& lhs, const Point& rhs);
-        const Point operator*(double rhs)const;
-        const Point operator/(double rhs)const;
+        template<typename S, int dim2>
+        friend bool operator==(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
 
-        friend Point operator+=(Point& lhs, const Point& rhs);
-        friend Point operator-=(Point& lhs, const Point& rhs);
-        Point operator*=(double rhs);
-        Point operator/=(double rhs);
+        template<typename S, int dim2>
+        friend bool operator!=(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
 
-        double &operator[](int index) { return values[index - 1]; }
+        template<typename S, int dim2>
+        friend bool operator<=(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
 
-        friend std::ostream& operator<<(std::ostream& os, const Point& output);
-        friend std::istream& operator>>(std::istream& os, Point& input);
+        template<typename S, int dim2>
+        friend bool operator>=(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        template<typename S, int dim2>
+        friend bool operator<(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        template<typename S, int dim2>
+        friend bool operator>(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        template<typename S, int dim2>
+        friend const Point<S, dim2> operator+(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        template<typename S, int dim2>
+        friend const Point<S, dim2> operator-(const Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        const Point operator*(T rhs) const;
+
+        const Point operator/(T rhs) const;
+
+        template<typename S, int dim2>
+        friend Point operator+=(Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        template<typename S, int dim2>
+        friend Point operator-=(Point<S, dim2> &lhs, const Point<S, dim2> &rhs);
+
+        Point operator*=(T rhs);
+
+        Point operator/=(T rhs);
+
+        T &operator[](int index) {
+            try {
+                if (index >= dim)
+                    throw OutOfBoundsEx(0);
+                return values[index - 1];
+            } catch (OutOfBoundsEx &ex) {
+                std::cerr << ex << std::endl;
+
+            }
+        }
+
+        //IO
+        template<typename S, int dim2>
+        friend std::ostream &operator<<(std::ostream &os, const Point<S, dim2> &output);
+
+        template <typename S, int dim2>
+        friend std::istream &operator>>(std::istream &os, Point<S, dim2> &input);
 
 
     };
 
+
+
+
+
+
 }
 
+
+#include "Point.cpp"
 #endif // __point_h
+

@@ -1,8 +1,10 @@
 #include <iostream>
 #include <fstream>
+
 #include "Point.h"
 #include "Cluster.h"
 #include "KMeans.h"
+
 
 using namespace std;
 using namespace Clustering;
@@ -10,17 +12,23 @@ using namespace Clustering;
 int main() {
     cout << "Hello, World!" << endl;
 //Testing
-    std::ifstream file("points.txt");
+//   ifstream file("points.txt");
 
-    KMeans test(2, file, 5);
-    file.close();
+//    KMeans<3, 5> test(file);
+
+//    file.close();
+//    const int dim = 5;
+//    Point<double, dim> p1();
+//    cout << p1;
 
 
 //    Cluster c1;
-//
+
 //    cout << "c1: " << endl;
 //    file >> c1;
+//    cout << c1;
 //    file.close();
+
 //
 //    cout << c1;
 //    c1.computeCent();
@@ -45,14 +53,14 @@ int main() {
 //    for (int i = 0; i < 3; i++)
 //        array2[i] = 1;
 //
-//    Point p1(3);
+//    Point<double, 4> p1();
 //    Point p2(3, array2), p3(p1), p4(3);
 //    p4 = p2;
 //
 //    cout << "Dimensions of p1: " << p1.getDim() << endl;
 //
 //    cout<< "p1 and p2:" << endl;
-//    cout << p1 << p2;
+//   cout << p1;
 //    cout << p1.distanceTo(p2) << endl;
 //
 //    if (p1 == p2) {
@@ -99,7 +107,7 @@ int main() {
 //    c1.add(&p6);
 //    c1.add(&p5);
 //
-//    cout << "Cluster c1 ";
+//    cout << "Cluster c1 " << endl;
 //    cout << c1;
 //
 //    cout << "Cluster c1 ";

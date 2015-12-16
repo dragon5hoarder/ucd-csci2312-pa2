@@ -2,7 +2,7 @@
 // Created by dragon5hoarder on 9/19/2015.
 //
 
-#include "Cluster.h"
+
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -10,273 +10,272 @@
 #include <algorithm>
 #include <cstdlib>
 
+//#include "Cluster.h"
+
 
 namespace Clustering {
-    int Cluster::clustID = 0;
+    template <typename T, int dim>
+    int Cluster<T, dim>::clustID = 0;
 
-    Cluster::Cluster() {
+    template <typename T, int dim>
+    Cluster<T, dim>::Cluster() {
         size = 0;
-        points = nullptr;
+
         thisID = clustID++;
-        pointDimension = 0;
-        centroid = new Point(pointDimension);
+        //pointDimension = 0;
+        centroid();
         validCent = false;
     }
 
-    Cluster::Cluster(const Cluster &copyCluster) {
+    template <typename T, int dim>
+    Cluster<T, dim>::Cluster(const Cluster<T, dim> &copyCluster) {
         size = copyCluster.size;
-        points = new Node;
-        NodePtr tester = points;
-        NodePtr copyTester = copyCluster.points;
+        auto copyIt = copyCluster.points.begin();
+        auto it = points.before_begin();
         for (int i = 0; i < size; i++){
-            tester->point = copyTester->point;
-            tester->next = new Node;
-            tester = tester->next;
-            copyTester = copyTester->next;
+            points.insert_after(it++, *copyIt);
+            copyIt++;
         }
-        tester->next = nullptr;
+
         thisID = clustID++;
-        pointDimension = copyCluster.pointDimension;
-        centroid = new Point(pointDimension);
+        //pointDimension = copyCluster.pointDimension;
+        centroid();
         validCent = copyCluster.validCent;
     }
 
-    void Cluster::operator=(const Cluster &copyCluster){
+    template <typename T, int dim>
+    void Cluster<T, dim>::operator=(const Cluster<T, dim> &copyCluster){
         if (this == &copyCluster) {
             return;
         }
         size = copyCluster.size;
         clear();
-        points = new Node;
-        NodePtr tester = points;
-        NodePtr copyTester = copyCluster.points;
+
+        auto copyIt = copyCluster.points.begin();
+        auto it = points.before_begin();
         for (int i = 0; i < size; i++){
-            tester->point = copyTester->point;
-            tester->next = new Node;
-            tester = tester->next;
-            copyTester = copyTester->next;
+            points.insert_after(it++, *copyIt);
+            copyIt++;
         }
-        tester->next = nullptr;
-        pointDimension = copyCluster.pointDimension;
-        centroid = new Point(pointDimension);
-        *centroid = *copyCluster.centroid;
+
+        //pointDimension = copyCluster.pointDimension;
+        //centroid = new T();
+        centroid = *copyCluster.centroid;
         validCent = copyCluster.validCent;
-    }
-
-    Cluster::~Cluster(){
-        clear();
-        delete centroid;
 
     }
 
-    void Cluster::clear(){
-        if (points != nullptr) {
-            NodePtr tester = points;
-            tester = tester->next;
-            NodePtr deleted = points;
-            while (tester != nullptr) {
-                delete deleted->point;
-                delete deleted;
-                deleted = tester;
-                tester = tester->next;
-            }
-            delete deleted;
-            points = nullptr;
-        }
+    template <typename T, int dim>
+    Cluster<T, dim>::~Cluster(){
+        //clear();
+        //delete centroid;
+
+    }
+
+    template <typename T, int dim>
+    void Cluster<T, dim>::clear(){
+        points.clear();
     }
 
 
 
-    void Cluster::add(const PointPtr &addedPt) {
+    template <typename T, int dim>
+    void Cluster<T, dim>::add(const T &addedPt) {
 
-        NodePtr tester;
-        NodePtr placeHolder = new Node;
-        placeHolder->point = addedPt;
+
+
         bool statement = true;
+        try {
+            auto it = points.begin();
+            if (points.empty() || *it >= addedPt) {
 
-        if (points == nullptr || *(points->point) >= *addedPt)
-
-        {
-            placeHolder->next = points;
-            points = placeHolder;
-            size++;
-        }
-
-        else
-        {
-
-            tester = points;
-
-            while (tester->next!= nullptr && *(tester->next->point) < *addedPt)
-
+                points.push_front(addedPt);
+                size++;
+            }
+            else
             {
-                tester = tester->next;
+
+
+                auto previousIt = points.begin();
+                while (it != points.end() && *it < addedPt)
+                {
+                    previousIt = it;
+                    it++;
+                }
+
+                points.insert_after(previousIt, addedPt);
+                size++;
             }
-            placeHolder->next = tester->next;
-            tester->next = placeHolder;
-            size++;
+        } catch(DimensionalityMismatchEx &ex) {
+            std::cerr << ex << std::endl;
         }
+
+
         validCent = false;
     }
 
-    const PointPtr& Cluster::remove(const PointPtr &deletedPt) {
-        NodePtr tester;
-        NodePtr deleted;
+    template <typename T, int dim>
+    const T& Cluster<T, dim>::remove(const T &deletedPt) {
+        if (size == 0)
+            throw RemoveFromEmptyEx(0);
 
-        if (points->point == deletedPt) {
-
-            deleted = points;
-            points = points->next;
-            delete deleted;
+        try {
+            points.remove(deletedPt);
             size--;
-            return deletedPt;
-        }
 
-        else {
-            for (NodePtr tester = points; tester != nullptr; tester = tester->next) {
 
-                if (tester->next->point == deletedPt) {
-                    deleted = tester->next;
-                    if (tester->next->next == nullptr) {
-                        tester->next = nullptr;
-                    }
-                    else {
-                        tester->next = tester->next->next;
-                    }
-                    delete deleted;
-                    size--;
-                    return deletedPt;
-
-                }
-            }
-
+        }catch(DimensionalityMismatchEx &ex) {
+            std::cerr << ex << std::endl;
         }
         validCent = false;
+        return deletedPt;
     }
 
-    bool operator==(const Cluster &lhs, const Cluster &rhs){
-        NodePtr testerLhs = lhs.points;
-        NodePtr testerRhs = rhs.points;
-        if (lhs.size == rhs.size) {
-            for (int i = 0; i < lhs.size; i++) {
-                if (testerLhs->point != testerRhs->point) {
-                    testerRhs = testerRhs->next;
-                    testerLhs = testerLhs->next;
-                    return false;
-                }
-
-            }
+    template <typename S, int dim3>
+    bool operator==(const Cluster<S, dim3> &lhs, const Cluster<S, dim3> &rhs){
+        if (lhs.thisID == rhs.thisID)
             return true;
-        }
         return false;
+//        auto lhsIt = lhs.points.begin();
+//        auto rhsIt = rhs.points.begin();
+//        if (lhs.size == rhs.size) {
+//            for (int i = 0; i < lhs.size; i++) {
+//                try {
+//                    if (*lhsIt != *rhsIt) {
+//                        return false;
+//                    }
+//                }catch(DimensionalityMismatchEx &ex) {
+//                    std::cerr << ex << std::endl;
+//                }
+//                lhsIt++;
+//                rhsIt++;
+//
+//            }
+//            return true;
+//        }
+//        return false;
     }
 
 
 
-    Cluster& Cluster::operator+=(const Point &rhs){
-        PointPtr dynPoint = new Point(rhs);
-        add(dynPoint);
+    template <typename T, int dim>
+    Cluster<T, dim>& Cluster<T, dim>::operator+=(const T &rhs){
+        //Point dynPoint(rhs);
+        add(rhs);
     }
 
-    Cluster& Cluster::operator-=(const Point &rhs){
-        NodePtr tester;
-        NodePtr deleted;
-        if (*(points->point) == rhs) {
-
-            deleted = points;
-            points = points->next;
-            delete deleted;
-            size--;
-            validCent = false;
-            return *this;
-        }
-
-        else {
-            for (NodePtr tester = points; tester != nullptr; tester = tester->next) {
-
-                if (*(tester->next->point) == rhs) {
-                    deleted = tester->next;
-                    if (tester->next->next == nullptr) {
-                        tester->next = nullptr;
-                    }
-                    else {
-                        tester->next = tester->next->next;
-                    }
-                    delete deleted;
-                    size--;
-                    validCent = false;
-                    return *this;
-
-                }
-            }
-
-        }
+    template <typename T, int dim>
+    Cluster<T, dim>& Cluster<T, dim>::operator-=(const T &rhs){
+        remove(rhs);
+//        NodePtr tester;
+//        NodePtr deleted;
+//        try {
+//            if (*points->point == rhs) {
+//
+//                deleted = points;
+//                points = points->next;
+//                delete deleted;
+//                size--;
+//                validCent = false;
+//                return *this;
+//            }
+//
+//
+//            else {
+//                for (NodePtr tester = points; tester != nullptr; tester = tester->next) {
+//
+//                    if (*tester->next->point == rhs) {
+//                        deleted = tester->next;
+//                        if (tester->next->next == nullptr) {
+//                            tester->next = nullptr;
+//                        }
+//                        else {
+//                            tester->next = tester->next->next;
+//                        }
+//                        delete deleted;
+//                        size--;
+//                        validCent = false;
+//                        return *this;
+//
+//                    }
+//                }
+//
+//            }
+//        }catch(DimensionalityMismatchEx &ex) {
+//            std::cerr << ex << std::endl;
+//        }
     }
 
 
-    bool Cluster::isPresent(NodePtr& head, PointPtr& point){
-        NodePtr tester = head;
-        while (tester != nullptr){
-            if (tester->point == point)
+    template <typename T, int dim>
+    bool Cluster<T, dim>::isPresent(const T& point){
+        auto it = points.begin();
+        while (it != points.end()){
+            if (*it == point)
                 return true;
-            tester = tester->next;
+            it++;
 
         }
         return false;
     }
 
-    Cluster& Cluster::operator+=(const Cluster &rhs){
+    template <typename T, int dim>
+    Cluster<T, dim>& Cluster<T, dim>::operator+=(const Cluster<T, dim> &rhs){
 
 
-        NodePtr testerRhs = rhs.points;
+        auto rhsIt = rhs.points.begin();
 
-        while (testerRhs != nullptr) {
-            if (!isPresent(points, testerRhs->point)) {
+        while (rhsIt != points.end()) {
+            if (!isPresent(*rhsIt)) {
 
-                add(testerRhs->point);
+                add(*rhsIt);
             }
-            testerRhs = testerRhs->next;
+            rhsIt++;
         }
 
     }
 
-    Cluster& Cluster::operator-=(const Cluster &rhs){
+    template <typename T, int dim>
+    Cluster<T, dim>& Cluster<T, dim>::operator-=(const Cluster<T, dim> &rhs){
 
 
-        NodePtr testerRhs = rhs.points;
+        auto rhsIt = rhs.points.begin();
 
-        while (testerRhs != nullptr) {
-            if (isPresent(points, testerRhs->point)) {
-
-                remove(testerRhs->point);
+        while (rhsIt != points.end()) {
+            if (isPresent(*rhsIt)) {
+                remove(*rhsIt);
             }
-            testerRhs = testerRhs->next;
+            rhsIt++;
         }
 
     }
 
-    const Cluster operator+(const Cluster &lhs, const PointPtr &rhs){
-        Cluster tempCluster = lhs;
+    template <typename S, int dim3>
+    const Cluster<S, dim3> operator+(const Cluster<S, dim3> &lhs, const S &rhs){
+        Cluster<S, dim3> tempCluster = lhs;
         tempCluster.add(rhs);
         return tempCluster;
 
     }
 
-    const Cluster operator-(const Cluster &lhs, const PointPtr &rhs){
-        Cluster tempCluster = lhs;
+    template <typename S, int dim3>
+    const Cluster<S, dim3> operator-(const Cluster<S, dim3> &lhs, const S &rhs){
+        Cluster<S, dim3> tempCluster = lhs;
         tempCluster.remove(rhs);
         return tempCluster;
 
     }
 
-    const Cluster operator+(const Cluster &lhs, const Cluster &rhs){
-        Cluster tempCluster = lhs;
+    template <typename S, int dim3>
+    const Cluster<S, dim3> operator+(const Cluster<S, dim3> &lhs, const Cluster<S, dim3> &rhs){
+        Cluster<S, dim3> tempCluster = lhs;
         tempCluster += rhs;
         return tempCluster;
     }
 
-    const Cluster operator-(const Cluster &lhs, const Cluster &rhs){
-        Cluster tempCluster = lhs;
+    template <typename S, int dim3>
+    const Cluster<S, dim3> operator-(const Cluster<S, dim3> &lhs, const Cluster<S, dim3> &rhs){
+        Cluster<S, dim3> tempCluster = lhs;
         tempCluster -= rhs;
         return tempCluster;
     }
@@ -285,37 +284,50 @@ namespace Clustering {
 
 
 
-    std::ostream &operator<<(std::ostream &os, const Cluster &output) {
+    template <typename S, int dim3>
+    std::ostream &operator<<(std::ostream &os, const Cluster<S, dim3> &output) {
 
 
-        NodePtr tester;
-        tester = output.points;
+
+        auto it = output.points.begin();
 
         for (int i = 0; i < output.size; i++) {
-            os << *(tester->point);
-            tester = tester->next;
+            os << *it;
+            it++;
             os << output.thisID << std::endl;
 
         }
-        std::cout << std::endl;
+        os <<  output.centroid << " centroid" << std::endl;
 
         return os;
     }
 
 
-    std::ifstream &operator>>(std::ifstream &os, Cluster &input) {
+    template <typename S, int dim3>
+    std::ifstream &operator>>(std::ifstream &os, Cluster<S, dim3> &input) {
 
         std::string line;
         if (os.is_open()){
+            getline(os, line);
+            //input.pointDimension = (int) std::count(line.begin(), line.end(), ',') + 1;
+            os.seekg(0, os.beg);
             while(getline(os, line)){
                 std::stringstream lineStream(line);
                 int dimensions = (int) std::count(line.begin(), line.end(), ',');
-                PointPtr newPoint = new Point(dimensions + 1);
-                lineStream >> *newPoint;
-                input.add(newPoint);
+                try {
+                    if ((dimensions + 1) != dim3)
+                        throw DimensionalityMismatchEx(3);
+                    S newPoint;
+                    lineStream >> newPoint;
+                    input.add(newPoint);
+                    input.imported++;
+                }catch(DimensionalityMismatchEx &ex) {
+                    std::cerr << ex << std::endl;
+                    input.failed++;
+                }
             }
-            input.pointDimension = input.points->point->getDim();
         }
+        std::cout << "Imported: " << input.numberImported() << " Failed: " << input.numberFailed() << std::endl;
 
 //        NodePtr tester;
 //        tester = input.points;
@@ -326,99 +338,177 @@ namespace Clustering {
 //
 //        }
 //        std::cout << std::endl;
-
+        input.createMap();
+        input.printMap();
         return os;
 
     }
 
-    void Cluster::setCent(const Point &copyPoint){// TODO test
-        *centroid = copyPoint;
-    }
-
-    const Point Cluster::getCent(){// TODO test
-        return *centroid;
-    }
-
-    void Cluster::computeCent() {// TODO test
-        pointDimension = points->point->getDim();
-        NodePtr tester = points;
-        PointPtr temp = new Point(pointDimension);
-        while (tester != nullptr){
-            *temp += *tester->point / static_cast<double>(size);
-            tester = tester->next;
+    template <typename T, int dim>
+    void Cluster<T, dim>::setCent(const T &copyPoint){
+        try {
+            centroid = copyPoint;
+        }catch(DimensionalityMismatchEx &ex) {
+            std::cerr << ex << std::endl;
         }
-        delete centroid;
-        centroid = temp;
-        validCent = true;
     }
 
-    bool Cluster::centIsValid(){// TODO test
+    template <typename T, int dim>
+    const T Cluster<T, dim>::getCent(){
+        return centroid;
+    }
+
+    template <typename T, int dim>
+    void Cluster<T, dim>::computeCent() {
+        auto it = points.begin();
+        //pointDimension = it->getDim();
+        T temp();
+
+        if (size == 0)
+            throw RemoveFromEmptyEx(1);
+
+        while (it != points.end()){
+            try {
+                temp += *it / static_cast<double>(size);
+            }catch(DimensionalityMismatchEx &ex) {
+                std::cerr << ex << std::endl;
+            }
+            it++;
+        }
+        //delete centroid;
+        try {
+            centroid = temp;
+            validCent = true;
+        }catch(DimensionalityMismatchEx &ex) {
+            std::cerr << ex << std::endl;
+        }
+
+    }
+
+    template <typename T, int dim>
+    bool Cluster<T, dim>::centIsValid(){
         return validCent;
     }
 
-    void Cluster::pickPoints(int k, PointPtr *pointArray){ //TODO test
+    template <typename T, int dim>
+    void Cluster<T, dim>::pickPoints(int k, std::vector<T> &pointArray){
         int step = size / k;
-        NodePtr tester = points;
-        pointArray[0] = points->point;
+        auto it = points.begin();
+        pointArray.push_back(*it);
 
          for (int i = 1; i < k; i++){
              int j = 0;
-             while (tester != nullptr && j < step){
-                tester = tester->next;
+             while (it != points.end() && j < step){
+                it++;
                 j++;
             }
-            pointArray[i] = tester->point;
+            pointArray.push_back(*it);
 
         }
     }
 
-    Point &Cluster::operator[](int index) const{ // TODO test
-        NodePtr tester = points;
-        Point temp(1);
+    template <typename T, int dim>
+    T &Cluster<T, dim>::operator[](int index) {
+        if (index >= size)
+            throw OutOfBoundsEx(1);
+        auto it = points.begin();
+
         int i = 0;
-        while (tester != nullptr){
+        while (it != points.end()){
             if (i == index) {
-                return *tester->point;
+                return *it;
             }
             else{
                 i ++;
-                tester = tester->next;
+                it++;
             }
         }
-        return temp;
+
     }
 
-    double Cluster::intraClusterDistance() const{ // TODO test
-        NodePtr testerI = points;
-        NodePtr testerJ = points;
+    template <typename T, int dim>
+    double Cluster<T, dim>::intraClusterDistance(){
+        auto it1 = points.begin();
+        auto it2 = points.begin();
+
         double sum = 0;
         for (int i = 0; i < size; i++){
             for (int j = 0; j < size; j++){
-                sum += testerJ->point->distanceTo(*testerI->point);
-                testerJ = testerJ->next;
+                DPKey<T> key(*it1, *it2);
+                sum += (distances.find(key))->second;
+                it2++;
             }
-            testerJ = points;
-            testerI = testerI->next;
+            it1++;
+            it2 = points.begin();
         }
         return sum / 2;
     }
 
-    double interClusterDistance(const Cluster &c1, const Cluster &c2){ // TODO test
+    template <typename S, int dim3>
+    double interClusterDistance(Cluster<S, dim3> &c1, Cluster<S, dim3> &c2){
         double sum = 0;
+        auto it1 = c1.points.begin();
+        auto it2 = c2.points.begin();
         for (int i = 0; i < c1.size; i++){
             for (int j = 0; j < c2.size; j++){
-                sum += c1[j].distanceTo(c2[i]);
+                DPKey<S> key(*it1, *it2);
+                sum += (c1.distances.find(key))->second;
+                it2++;
             }
+            it1++;
+            it2 = c2.points.begin();
         }
         return sum;
     }
 
-    int Cluster::getClusterEdges(){ // TODO test
+    template <typename T, int dim>
+    int Cluster<T, dim>::getClusterEdges(){
         return size * (size - 1) / 2;
     }
 
-    double interClusterEdges(const Cluster &c1, const Cluster &c2){
+    template <typename S, int dim3>
+    double interClusterEdges(const Cluster<S, dim3> &c1, const Cluster<S, dim3> &c2){
         return c1.size * c2.size;
+    }
+
+    template <typename T, int dim>
+    bool Cluster<T, dim>::contains(const T &pnt){
+
+        if (isPresent(pnt))
+            return true;
+
+        return false;
+    }
+
+    template <typename T, int dim>
+    void Cluster<T, dim>::createMap() {
+        for (auto ito = points.begin(); ito != points.end(); ++ ito) {
+            auto iti = ito;
+            ++ iti; // Start the inner iterator at the next value to avoid repeating points
+            for (; iti != points.end(); ++ iti) {
+//                std::cout << *ito << ito->getId() << ", " << *iti << iti->getId() << std::endl; // Uncomment to see the points...
+//                std::cout << "DISTANCE: " << ito->distanceTo(*iti) << std::endl; // ...and the distance
+                DPKey<T> key(*ito, *iti);
+                auto search = distances.find(key); // check if it is there already (won't be :))
+                if (search == distances.end())
+                    distances[key] = ito->distanceTo(*iti);
+            }
+        }
+    }
+
+    template <typename T, int dim>
+    void Cluster<T, dim>::printMap() {
+        std::cout << std::endl <<  "Print out map" << std::endl;
+        for (auto it = distances.begin(); it != distances.end(); ++ it)
+            std::cout
+            << "{{"
+            << it->first.p1.getId() // Note that the entries of the map are of type std::pair
+            << ", "
+            << it->first.p2.getId()
+            << "}, "
+            << it->second
+            << "}"
+            << std::endl;
     }
 
 

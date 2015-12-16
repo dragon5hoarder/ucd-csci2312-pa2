@@ -1,63 +1,77 @@
-#include "Point.h"
+
 #include <cmath>
 #include <string>
 #include <cstdlib>
+
+//#include "Point.h"
 
 
 
 namespace Clustering {
 
+    template <typename T, int dim>
+    unsigned int Point<T, dim>::pointID = 0;
+
+
     // Constructor
     // Initializes the point to 0
-    Point::Point(int dimension) {
-        dim = dimension;
-        values = new double[dimension];
-        for (int i = 0; i < dimension; i++) {
-            values[i] = 0;
+    template <typename T, int dim>
+    Point<T, dim>::Point() {
+        //dim = dimension;
+        //std::cout << thisID << ": " << values.size() << std::endl;
+        for (int i = 0; i < dim; i++) {
+            values.push_back(0);
         }
+        thisID = pointID++;
     }
 
 // Constructor
 // Initializes the point to the values in an array
-    Point::Point(int dimension, double *coordinates) {
-        dim = dimension;
-        values = new double[dimension];
-        for (int i = 0; i < dimension; i++) {
-            values[i] = coordinates[i];
+    template <typename T, int dim>
+    Point<T, dim>::Point(T *coordinates) {
+        //dim = dimension;
+        for (int i = 0; i < dim; i++) {
+            values.push_back(coordinates[i]);
         }
+        thisID = pointID++;
     }
 
     //copy constructor
-    Point::Point(const Point &copyPt) {
-        dim = copyPt.dim;
-        values = new double[dim];
+    template <typename T, int dim>
+    Point<T, dim>::Point(const Point &copyPt) {
+        //dim = copyPt.dim;
+        auto it = copyPt.values.begin();
         for (int i = 0; i < dim; i++) {
-            values[i] = copyPt.values[i];
+            values.push_back(it[i]);
         }
+        thisID = copyPt.thisID;
     }
 
-    void Point::operator=(const Point &copyPt) {
+    template <typename T, int dim>
+    void Point<T, dim>::operator=(const Point &copyPt) {
         if (this == &copyPt) {
             return;
         }
-        dim = copyPt.dim;
-        delete[] values;
-        values = new double[dim];
+        //dim = copyPt.dim;
+        values.erase(values.begin(),values.end());
         for (int i = 0; i < dim; i++) {
-            values[i] = copyPt.values[i];
+            values.push_back(copyPt.values[i]);
         }
+        thisID = copyPt.thisID;
     }
 
 // Destructor
 // No dynamic allocation, so nothing to do; if omitted, generated automatically
-    Point::~Point() {
-        delete[] values;
+    template <typename T, int dim>
+    Point<T, dim>::~Point() {
+        //values.erase(values.begin());
     }
 
 // Mutator methods
 // Change the values of private member variables
 
-    void Point::setValue(int dimension, double newValue) {
+    template <typename T, int dim>
+    void Point<T, dim>::setValue(int dimension, T newValue) {
         values[dimension - 1] = newValue;
     }
 
@@ -65,19 +79,21 @@ namespace Clustering {
 // Accessors
 // Return the current values of private member variables
 
-    double Point::getValue(int dimension) {
+    template <typename T, int dim>
+    T Point<T, dim>::getValue(int dimension) {
         return values[dimension - 1];
     }
 
-    int Point::getDim() {
-        return dim;
-    }
+//    int Point::getDim() {
+//        return dim;
+//    }
 
 
 // returns the distance from another specified point
-    double Point::distanceTo(const Point &otherPoint) {
-        double sum = 0;
-        double valueDistance;
+    template <typename T, int dim>
+    T Point<T, dim>::distanceTo(const Point &otherPoint) {
+        T sum = 0;
+        T valueDistance;
         for (int i = 0; i < dim; i++) {
             valueDistance = (values[i] - otherPoint.values[i]);
             sum += (valueDistance * valueDistance);
@@ -86,116 +102,148 @@ namespace Clustering {
     }
 
 //Overload operators
-   bool operator==(const Point& lhs, const Point &rhs) {
 
-        for (int i = 0; i < lhs.dim; i++) {
-            if (lhs.values[i] != rhs.values[i])
+    template <typename W, int dim3>
+    bool operator==(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(2);
+        if(lhs.thisID != rhs.thisID) {
+//        for (int i = 0; i < lhs.dim; i++) {
+//            if (lhs.values[i] != rhs.values[i])
                 return false;
         }
+        //}
         return true;
     }
 
-    bool operator!=(const Point& lhs, const Point &rhs) {
+    template <typename W, int dim3>
+    bool operator!=(const Point<W, dim3>& lhs, const Point<W, dim3>& rhs) {
         if (lhs == rhs)
             return false;
         return true;
     }
 
-    bool operator<=(const Point& lhs, const Point &rhs) {
+    template <typename W, int dim3>
+    bool operator<=(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(2);
 
-        for (int i = 0; i < lhs.dim; i++) {
+        for (int i = 0; i < dim3; i++) {
             if (lhs.values[i] > rhs.values[i])
                 return false;
         }
         return true;
     }
 
-    bool operator>=(const Point& lhs, const Point &rhs) {
-
-        for (int i = 0; i < lhs.dim; i++) {
+    template <typename W, int dim3>
+    bool operator>=(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(2);
+        for (int i = 0; i < dim3; i++) {
             if (lhs.values[i] < rhs.values[i])
                 return false;
         }
         return true;
     }
 
-    bool operator<(const Point& lhs, const Point &rhs) {
+    template <typename W, int dim3>
+    bool operator<(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
         if (lhs >= rhs)
             return false;
         return true;
     }
 
-    bool operator>(const Point& lhs, const Point &rhs) {
+    template <typename W, int dim3>
+    bool operator>(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
         if (lhs <= rhs)
             return false;
         return true;
     }
 
-    const Point operator+(const Point& lhs, const Point &rhs) {
-        Point temp(lhs.dim);
-        for (int i = 0; i < rhs.dim; i++) {
+    template <typename W, int dim3>
+    const Point<W, dim3> operator+(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(1);
+        Point<W, dim3> temp();
+        for (int i = 0; i < dim3; i++) {
             temp.values[i] = lhs.values[i] + rhs.values[i];
         }
         return temp;
     }
 
-    const Point operator-(const Point& lhs, const Point &rhs) {
-        Point temp(lhs.dim);
-        for (int i = 0; i < rhs.dim; i++) {
+    template <typename W, int dim3>
+    const Point<W, dim3> operator-(const Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(1);
+        Point<W, dim3> temp();
+        for (int i = 0; i < dim3; i++) {
             temp.values[i] = lhs.values[i] - rhs.values[i];
         }
         return temp;
     }
 
-    const Point Point::operator*(double rhs)const {
-        Point temp(dim);
+    template <typename T, int dim>
+    const Point<T, dim> Point<T, dim>::operator*(T rhs)const {
+        Point<T, dim> temp();
         for (int i = 0; i < dim; i++) {
             temp.values[i] = values[i] * rhs;
         }
         return temp;
     }
 
-    const Point Point::operator/(double rhs)const {
-        Point temp(dim);
+    template <typename T, int dim>
+    const Point<T, dim> Point<T, dim>::operator/(T rhs)const {
+        Point temp(*this);
         for (int i = 0; i < dim; i++) {
-            temp.values[i] = values[i] / rhs;
+            temp.values[i] /= rhs;
         }
         return temp;
     }
 
-    Point operator+=(Point& lhs, const Point &rhs) {
-        for (int i = 0; i < lhs.dim; i++) {
+    template <typename W, int dim3>
+    Point<W, dim3> operator+=(Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(1);
+        for (int i = 0; i < dim3; i++) {
             lhs.values[i] += rhs.values[i];
         }
         return lhs;
     }
 
-    Point operator-=(Point& lhs, const Point &rhs) {
-        for (int i = 0; i < lhs.dim; i++) {
+    template <typename W, int dim3>
+    Point<W, dim3> operator-=(Point<W, dim3>& lhs, const Point<W, dim3> &rhs) {
+//        if (lhs.dim != rhs.dim)
+//            throw DimensionalityMismatchEx(1);
+        for (int i = 0; i < dim3; i++) {
             lhs.values[i] -= rhs.values[i];
         }
         return lhs;
     }
 
-    Point Point::operator/=(double rhs) {
+    template <typename T, int dim>
+    Point<T, dim> Point<T, dim>::operator/=(T rhs) {
         for (int i = 0; i < dim; i++) {
             values[i] /= rhs;
         }
         return *this;
     }
 
-    Point Point::operator*=(double rhs) {
+    template <typename T, int dim>
+    Point<T, dim> Point<T, dim>::operator*=(T rhs) {
         for (int i = 0; i < dim; i++) {
             values[i] *= rhs;
         }
         return *this;
     }
 
-    std::ostream &operator<<(std::ostream &os, const Point &output) {
+    template <typename W, int dim3>
+    std::ostream &operator<<(std::ostream &os, const Point<W, dim3> &output) {
 
-        for (int i = 0; i < output.dim; i++) {
+        for (int i = 0; i < dim3; i++) {
             os << output.values[i];
-            if(i < output.dim - 1)
+            if(i < dim3 - 1)
                 os << ", ";
         }
         os << ": ";
@@ -203,7 +251,8 @@ namespace Clustering {
         return os;
     }
 
-    std::istream &operator>>(std::istream &os, Point &input) {
+    template <typename W, int dim3>
+    std::istream &operator>>(std::istream &os, Point<W, dim3> &input) {
         std::string value;
         double d;
 
@@ -219,11 +268,12 @@ namespace Clustering {
             input.setValue(i++, resultDouble);
         }
 
-//        std::cout << "Input coordinates: " << std::endl;
-//        for (int i = 0; i < input.dim; i++) {
-//            os >> input.values[i];
-//        }
+        std::cout << "Input coordinates: " << std::endl;
+        for (int i = 0; i < input.dim; i++) {
+            os >> input.values[i];
+        }
 
         return os;
     }
+
 }
